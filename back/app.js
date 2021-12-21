@@ -17,7 +17,7 @@ const server = async () => {
         const dbInfo = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@mongostudy.5g49u.mongodb.net/${process.env.DB_TITLE}?retryWrites=true&w=majority`
 
         mongoose.set('debug', true) //mongoose query 보기
-        
+
         await mongoose.connect(dbInfo)
         .then(result => console.log('몽고디비 연결성공'))
     
@@ -102,24 +102,38 @@ const server = async () => {
         app.put('/api/user/update/:userId', async(req, res) => {
             try {
                 const { userId } = req.params 
+                // console.log(req.body, 'asdasdasd')
+
                 if(!mongoose.isValidObjectId(userId)) {
                    res.status(400).json({ err: 'invalid userId' }) 
                 }
-                if(!req.body.age) {
-                    res.status(400).json({ err: 'age is required' }) 
+                if(!req.body.age && !req.body.name) {
+                    res.status(400).json({ err: 'age or name is required' }) 
                 }
-                if(typeof req.body.age !== 'number') {
+                if(req.body.age && typeof req.body.age !== 'number') {
                     res.status(400).json({ err: 'age must be a number' }) 
                 }
+                if(req.body.name && typeof req.body.name.first !== 'string' && typeof req.body.name.last !== 'string') {
+                    return res.status(400).json({ err: 'name must be a string' }) 
+                }
 
+                let bodyObj = {}
+                if(req.body.age) bodyObj.age = req.body.age
+                if(req.body.name) bodyObj.name = req.body.name
+                if( req.body.email) bodyObj.email = req.body.email
 
+                console.log(bodyObj, 'asdasd')
+            
+               
+                // "name": { "first": "cc", "last": "ee" }
 
                 // console.log(req.body)
-                const user = await User.findByIdAndUpdate(userId, {
-                    // username: req.body.username,
-                   $set: { age: req.body.age, email: req.body.email },
-                   
-                }, { new: true })
+                // const user = await User.findByIdAndUpdate(userId, {
+                //     // username: req.body.username,
+                // //    $set: { bodyObj },
+                
+                // }, { new: true })
+                const user = await User.findByIdAndUpdate(userId, bodyObj, { new: true })
 
                 res.status(200).json(user)
 

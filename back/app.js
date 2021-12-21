@@ -143,6 +143,36 @@ const server = async () => {
         })
         
 
+        // test
+        app.post('/api/user/test/:userId', async(req, res) => {
+            try {
+                const { userId } = req.params;
+                const user = await User.findByIdAndUpdate(userId, {
+                    $push: { array: { name: req.body.name } }
+                }, {new: true})
+                res.json(user)
+
+            } catch(err) {
+                console.log(err)
+            }
+        })
+
+        app.put('/api/user/test/:userId', async(req, res) => {
+            try {
+                const { userId } = req.params;
+                const user = await User.findOneAndUpdate(userId, { 
+                    // $pull: {
+                    //     array: { _id: '61c1f85f11fb31321cc79973' } // $pull 되는구나.. 만약 배열안 객체에 또 객체가 있을 경우 한버 더 타고 들어가면 됨.
+                    // }
+
+                    
+                }, { new: true })
+
+                res.json(user)
+            } catch(err) {
+                console.log(err)
+            }
+        })
 
     
         // app.get('/test', (req, res) => {

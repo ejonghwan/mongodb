@@ -13,6 +13,9 @@ const UserSchema = new mongoose.Schema({
     },
     age: Number,
     email: String,
+    array: [
+        { name: { type: String } }
+    ]
 }, {
     timestamps: true, //생성한 시간을 만들어줌, 업데이트할 때마다 업데이트키를 생성해줌 
 })

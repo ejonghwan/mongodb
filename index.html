@@ -8,6 +8,53 @@
 </head>
 <body>
     
+    
+    <script>
+        // 실습은 back 에 있음
+        // mongoose.set('debug', true) mongoose query 보기
+        
+        // #####################  생성  ##################
+        // insertOne({ name: " aaa ", email: " dd@dd.com " }) - 한개만 생성
+        // insertOne({ name: { a: "aa", b: "bb" }, email: " dd@dd.com " }) - 객체도 배열도 넣기 가능 
+        // ※ 근데 불러올 땐 findOne({ "name.a": "aa" }) - 이런식으로 해야됨 객체접근에 "" 넣기 꼭!
+
+
+
+
+        // #####################  찾기  ##################
+        // find() - 모두 불러오기
+        // findOne({ name: " aaa " }) - 이렇게 하면 name: " aaa " 해당하는 것 한개만 불러옴
+        // updateOne({ name: "aaa" }, { $set: { age: 30 } }) - 한개만 수정. 첫번째는 셀렉, 두번째는 어떤값을 뭘로 수정. $set은 추가&수정
+        // undateOne({ name: "aaa" }, { $inc: { age: 1 } }) - $inc는 한개씩 올리기 -1 하면 한개씩 내리기. 
+
+        // objectId로 셀렉할때는 findOne({ _id: objectId("21903812089321") }) 이런식으로 다 적어줘야함
+
+
+
+
+        // #####################  삭제  ##################
+        // deleteOne({ _id: ObjectId("("21903812089321") ") }) - 한개만 삭제
+        // findByIdAndDelete({ _id: 아이디 }) - 유저 받을  수 있음
+        // deleteOne({ _id: 아이디 })  - 위에꺼랑 차이는 유저를 받냐 못받냐의 차이... 얘는 못받음
+
+
+        // #####################  수정  ##################
+        // updateOne()
+        // findByIdAndUpdate(userId, { data: data }, { new: true} ) - 첫번째 필터조건, 두번째 바뀔 내용, 세번째 옵션인데 {new:true} 는 업데이트 후 새 내용을 리턴해줌...data에도 $set: {} 써도되고 안써도됨
+        
+
+
+
+
+        //mongoose.isValidObjectId(아이디)는 objectId 형식인지 불린값으로 리턴해줌
+
+
+
+        
+
+
+
+    </script>
 
     <script type="module" src="./index.js"></script>
 </body>

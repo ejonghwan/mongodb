@@ -15,6 +15,9 @@ import User from './models/User.js'
 const server = async () => {
     try {
         const dbInfo = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@mongostudy.5g49u.mongodb.net/${process.env.DB_TITLE}?retryWrites=true&w=majority`
+
+        mongoose.set('debug', true) //mongoose query 보기
+        
         await mongoose.connect(dbInfo)
         .then(result => console.log('몽고디비 연결성공'))
     
@@ -60,6 +63,69 @@ const server = async () => {
                 console.log(err)
             }
             
+        })
+
+
+        app.get('/api/user/:userId', async (req, res) => {
+            try {
+                const { userId } = req.params;
+
+                if(!mongoose.isValidObjectId(userId)) { //isValidObjectId는 objectId 형식인지 불린값으로 리턴해줌
+                    res.status(400).json({ err: 'invalid userId' })
+                }
+                const user = await User.findOne({ _id: userId }) 
+            
+                return res.status(200).json(user)
+            } catch(err) {
+                console.log(err)
+            } 
+        })
+
+
+        app.delete('/api/user/delete/:userId', async(req, res) => {
+            try {
+                const { userId } = req.params
+                if(!mongoose.isValidObjectId(userId)) {
+                    return res.status(400).json({ err: 'invalid userId' })
+                }
+
+                const user = await User.findByIdAndDelete({ _id: userId })
+
+                return res.status(200).json(user)
+
+            } catch(err) {
+                console.log(err)
+            }
+        })
+
+
+        app.put('/api/user/update/:userId', async(req, res) => {
+            try {
+                const { userId } = req.params 
+                if(!mongoose.isValidObjectId(userId)) {
+                   res.status(400).json({ err: 'invalid userId' }) 
+                }
+                if(!req.body.age) {
+                    res.status(400).json({ err: 'age is required' }) 
+                }
+                if(typeof req.body.age !== 'number') {
+                    res.status(400).json({ err: 'age must be a number' }) 
+                }
+
+
+
+                // console.log(req.body)
+                const user = await User.findByIdAndUpdate(userId, {
+                    // username: req.body.username,
+                   $set: { age: req.body.age, email: req.body.email },
+                   
+                }, { new: true })
+
+                res.status(200).json(user)
+
+            } catch(err) {
+                console.log(err)
+            }
         })
         
 

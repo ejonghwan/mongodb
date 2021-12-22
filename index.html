@@ -41,12 +41,55 @@
         // #####################  수정  ##################
         // updateOne()
         // findByIdAndUpdate(userId, { data: data }, { new: true} ) - 첫번째 필터조건, 두번째 바뀔 내용, 세번째 옵션인데 {new:true} 는 업데이트 후 새 내용을 리턴해줌...data에도 $set: {} 써도되고 안써도됨
+
+        /*
+            모델안 배열 수정하는 법 ㅠㅠㅎ 
+            const user = await User.findOneAndUpdate({ _id: userId, "array._id": arrayId }, { array.$.name: " 바꿀 내용!! " })
+            
+            User.findOneAndUpdate({ 찾을 내용 }, { 바꿀내용 })
+            !! 탐색조건을 여러가지로 할 땐 elementMatch
+        */
         
 
 
 
+        // #####################  그 외  내용  ##################
+        // mongoose.isValidObjectId(아이디)는 objectId 형식인지 불린값으로 리턴해줌
 
-        //mongoose.isValidObjectId(아이디)는 objectId 형식인지 불린값으로 리턴해줌
+        // PUT API 작업 할 때 findByIdAndUpdate 조건에 몽구스 설정에서 name.first / name.last는 required였지만 없어도 잘 됐다 ...그 이유는 몽구스를 건너띄고 몽고디비에서 작업이 되기 때문에... 해결방법은 
+        /* 
+        1. 이걸 백에서 벨리데이션으로 넣을 때 새로운 객체를 만들어 해당 객체가 req.body에 있을 때만 넣는 방식
+            let bodyData = {}
+            if(req.body.age) bodyData.age = req.body.age
+            if(req.body.name) bodyData.name = req.body.name
+            await User.findByIdAndUpdate(userId, bodyData, { option })
+
+            2. 지금 방식은 생성할 때 new User(newuserdata) 새 인스턴스를 만들어서.. 해당 아이디가 있으면 수정해라 인데..이게 모두 몽고디비에서 이뤄지기 때문에 몽구스를 건너 띔..
+            그래서 몽구스로 해당 아이디를 가져와서 수정해라 라고 할 수도 있음. 이 차이가 중요함.  
+
+            !!현재방법 front > back > mongodb > 
+                     front < back < 
+
+            !!수정방법 front > back(findById) > mongodb >
+                 < user_doc (user update, mongoose validation check) <
+                 체크된걸 User.save() > mongodb <
+                 back < 
+            
+                // 조회 한번 하고 가져온 다음 업데이트하는 방법 2
+                const user = await User.findById(userId) //가져와서 
+                if(req.body.age) user.age = req.body.age; // 검증함 하고 !
+                if(req.body.name) user.name = req.body.name;
+                user.save()  //담는다! 여기서 save()는 실제로 update 메서드가 실행됨..
+                // console.log(user)
+                // 이런식으로 했을 땐 { new: true } 도 필요없음
+                res.status(200).json(user)
+
+
+            근데 아래 방법은 데이터베이스를 두번 왔다갔다 함..
+
+                                              
+
+        */
 
 
 

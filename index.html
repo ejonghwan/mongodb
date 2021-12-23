@@ -10,6 +10,13 @@
     
     
     <script>
+
+        function rl(min, max, ratio) {
+            return ((max - min) * ratio) + min;
+        }
+
+        console.log(rl(50, 150, 0.5))
+
         // 실습은 back 에 있음
         // mongoose.set('debug', true) mongoose query 보기
         

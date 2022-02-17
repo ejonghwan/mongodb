@@ -11,6 +11,8 @@ const BlogSchema = new Schema({
     content: { type: String, required: true, },
     isLive: { type: Boolean, default: false, },
     user: { type: Types.ObjectId, required: true, ref: 'user' }
+}, {
+    timestamps: true,
 })
 
 

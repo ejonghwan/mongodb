@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 // 
 import userRoutes from './routes/userRoutes.js'
 import blogRoutes from './routes/blogRoutes.js'
-
+import commentRoutes from './routes/commentRoutes.js'
 
 const app = express();
 app.use(express.json())
@@ -44,6 +44,7 @@ const server = async () => {
         // routes
         app.use('/api/user', userRoutes)
         app.use('/api/blog', blogRoutes)
+        app.use('/api/blog/:blogId/comment', commentRoutes)
 
 
         app.listen(5000, () => {

@@ -47,12 +47,18 @@ router.get('/alluser', async (req, res) => {
 router.get('/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
+       
 
         if(!mongoose.isValidObjectId(userId)) { //isValidObjectId는 objectId 형식인지 불린값으로 리턴해줌
             res.status(400).json({ err: 'invalid userId' })
         }
         const user = await User.findOne({ _id: userId }) 
     
+        //express test 
+        const hehe = res.type('json')
+        console.log('console: ', hehe)
+        // return res.status(200).json(hehe)
+
         return res.status(200).json(user)
     } catch(err) {
         console.log(err)

@@ -97,12 +97,9 @@ route.put('/:commentId', async (req, res) => {
 route.delete('/:commentId', async (req, res) => {
     try {
         const { blogId, commentId } = req.params; 
-
         if(!mongoose.isValidObjectId(blogId)) return res.status(400).send('is not objectId asdasd')
 
-        
         const deleteComment = await Comment.findByIdAndDelete(commentId)
-
         return res.status(200).json(deleteComment);
 
     } catch(err) {

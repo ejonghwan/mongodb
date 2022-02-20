@@ -24,8 +24,19 @@ route.post('/', async (req, res) => {
         if(!mongoose.isValidObjectId(userId)) return res.status(400).send('is not objectId')
         if(!mongoose.isValidObjectId(blogId)) return res.status(400).send('is not objectId')
 
-        const user = await User.findById(userId);
-        const blog = await Blog.findById(blogId);
+        // const user = await User.findById(userId);
+        // const blog = await Blog.findById(blogId);
+        // 여기서는 promise.all
+        /*
+            위에껀 동기(직렬)로 user불러오고 기다렸다가 blog를 불러오지만
+            아래껀 비동기(병렬)로 user, blog를 한번에 불러옴 
+            time: 171ms -> 97ms 
+        */
+        const [blog, user] = await Promise.all([
+            User.findById(userId),
+            Blog.findById(blogId)
+        ])
+
 
         console.log('asdasdasd', req.body)
         const createComment = await new Comment({ content, user, blog })

@@ -3,9 +3,12 @@ import mongoose from 'mongoose'
 import dotenv from 'dotenv'
 
 // 
-import userRoutes from './routes/userRoutes.js'
-import blogRoutes from './routes/blogRoutes.js'
-import commentRoutes from './routes/commentRoutes.js'
+// import userRoutes from './routes/userRoutes.js'
+// import blogRoutes from './routes/blogRoutes.js'
+// import commentRoutes from './routes/commentRoutes.js'
+import { userRoutes, blogRoutes, commentRoutes } from './routes/index.js'
+
+
 
 const app = express();
 app.use(express.json())

@@ -14,13 +14,15 @@ const router = express.Router({ mergeParams: true, });
 router.post('/', async (req, res) => {
     try {
         const { title, content, isLive, userId } = req.body;
-        if(typeof title !== 'string') res.status(400).send('title string')
-        if(typeof content !== 'string') res.status(400).send('title string')
-        if(typeof isLive !== 'boolean') res.status(400).send('title boolean')
-        if(!mongoose.isValidObjectId(userId)) res.status(400).send('is not objectId')
+        if(typeof title !== 'string') return res.status(400).send('title string');
+        if(typeof content !== 'string') return res.status(400).send('title string');
+        if(typeof isLive !== 'boolean') return res.status(400).send('title boolean');
+        if(!mongoose.isValidObjectId(userId)) return res.status(400).send('is not objectId');
 
         const user = await User.findById(userId)
-        const blog = await new Blog({ ...req.body, user })
+        console.log('user!!!!!!!!!', user)
+        const blog = await new Blog({ ...req.body, user: user.toObject() })
+        // const blog = await new Blog({ ...req.body, user })
         blog.save();
         
         return res.status(200).json(blog)

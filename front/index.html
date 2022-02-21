@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    asdasd
+
+
+    <div class="dataElement">
+        <ul></ul>
+    </div>
+
+    <script>
+        
+        const getBlog = async () => {
+            const res  = await axios.get(`http://localhost:5000/api/blog/allBlog/${10}`)
+            let data = await res.data;
+            // console.log(data[0])
+            
+            /*
+                user와 comment 데이터를 다시 불러와서 합쳐줌... 
+                내가 블로그 했던건 id값만 담고 있다가 db에 다시 요청해서 데이터를 불러왔지만...
+                이 방법은 client에서 세번 요청해서 아예 합쳐진 데이터를 넣어줌....근데 이거 비효율적이라고함 --;;;
+                (
+                    현재는 10개의 글을 Promise.all로 병렬호출 했지만 그 안에 있는 코멘트를 호출할떄마다 또 통신이 일어남..
+                    각 글에 10개의 코멘트가 있다고 치면 총 100번을 호출이 있는건데 아무리 병렬로 가져와도 데이터 호출 낭비와 시간이 오래걸림
+                    핵심은 백엔드에 요청을 적게하는게 중요함
+
+                    - 이 방법으론 글 20개 불러올 때 6초, 50개 불러올때 16초 걸림;; 
+                    - mongoose에서 populate로 사용했을 때 20개에 0.8초  50개에 0.7초
+
+                )
+
+                Promise.all([])은 인자로 배열을 받음 
+            */
+            // data = await Promise.all( data.map( async res => {
+            //     // const user = await axios.get(`http://localhost:5000/api/user/${res.user}`);
+            //     // const comment = await axios.get(`http://localhost:5000/api/blog/${res._id}/comment/allComment`);
+            //     let result = await Promise.all([ 
+            //         axios.get(`http://localhost:5000/api/user/${res.user}`), 
+            //         axios.get(`http://localhost:5000/api/blog/${res._id}/comment/allComment`),
+                    
+            //     ])
+            //     result[1].data.map( async comment => {
+            //         const res = await axios.get(`http://localhost:5000/api/user/${comment.user}`)
+            //         const data = await res.data
+            //         // console.log(data)
+            //         return comment.user = data
+            //     })
+               
+            //     res.user = result[0].data
+            //     res.comment = result[1].data
+            //     return res;
+            // })) 
+
+            console.log(data)
+            render(document.querySelector('.dataElement > ul'), data)
+        }
+        getBlog()     
+
+
+        const render = (ele, data) => {
+            data.map(data => {
+                return  ele.innerHTML += `
+                    <li>
+                        <div><strong>${data.title}</strong></div>    
+                        <div>${data.content}</div>    
+                        <div>${data.user.name.first} ${data.user.name.last}</div>    
+                    </li>
+                    <br />
+                `    
+            })
+        }
+
+        
+    </script>
+    <script src="./index.js" type="module"></script>
+    
+</body>
+</html>

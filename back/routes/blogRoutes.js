@@ -36,10 +36,12 @@ router.post('/', async (req, res) => {
 
 // @ GET 
 // @ /api/blog/allBlog
-router.get('/allBlog', async (req, res) => {
+router.get('/allBlog/:limitNum', async (req, res) => {
     try {
-
-        const allBlog = await Blog.find()
+        const { limitNum } = req.params;
+        let limitNumC = parseInt(limitNum)
+        // console.log('asdasdasd: ', limitNumC)
+        const allBlog = await Blog.find().limit(limitNumC).populate([{ path: 'user' }, { path: 'comments', populate: { path: 'user' } }])
         return res.status(200).json(allBlog)
 
     } catch(err) {

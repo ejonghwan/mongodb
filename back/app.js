@@ -1,23 +1,26 @@
 import express from 'express';
-import mongoose from 'mongoose'
-import dotenv from 'dotenv'
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import cors from 'cors';
 
 // 
 // import userRoutes from './routes/userRoutes.js'
 // import blogRoutes from './routes/blogRoutes.js'
 // import commentRoutes from './routes/commentRoutes.js'
 import { userRoutes, blogRoutes, commentRoutes } from './routes/index.js'
-
+import { generateFakeData } from './faker.js'
 
 
 const app = express();
 app.use(express.json())
+app.use(cors({ origin: true, credentials: true, }));
 
 dotenv.config()
 
-
-
 import User from './models/User.js'
+
+
+
 
 
 const server = async () => {
@@ -29,7 +32,7 @@ const server = async () => {
         await mongoose.connect(dbInfo)
         .then(result => console.log('몽고디비 연결성공'))
     
-
+        // generateFakeData(100, 10, 300)
         // model
 
         // const user = new User({

@@ -32,16 +32,25 @@ route.post('/', async (req, res) => {
             아래껀 비동기(병렬)로 user, blog를 한번에 불러옴 
             time: 171ms -> 97ms 
         */
-        const [blog, user] = await Promise.all([
+        const [user, blog] = await Promise.all([
             User.findById(userId),
             Blog.findById(blogId)
         ])
 
 
-        console.log('asdasdasd', req.body)
+        // console.log('asdasdasd', req.body)
         const createComment = await new Comment({ content, user, blog })
 
-        createComment.save()
+
+        await Promise.all([  //두개는 직렬로 할 필요 없어서..
+            createComment.save(),
+            // Blog모델에 코멘트 모델 넣어놨고 ...코멘트를 추가하거나 업데이트할때 "코멘트api안에서 블로그를" 업데이트해줘야됨 
+            await Blog.updateOne({ _id: blogId }, { $push: { comments: createComment } })
+        ])
+        
+        
+
+
 
         return res.status(200).json(createComment);
 

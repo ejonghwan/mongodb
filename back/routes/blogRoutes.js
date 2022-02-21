@@ -20,8 +20,8 @@ router.post('/', async (req, res) => {
         if(!mongoose.isValidObjectId(userId)) return res.status(400).send('is not objectId');
 
         const user = await User.findById(userId)
-        console.log('user!!!!!!!!!', user)
-        const blog = await new Blog({ ...req.body, user: user.toObject() })
+        // console.log('user!!!!!!!!!', user)
+        const blog = await new Blog({ ...req.body, user })
         // const blog = await new Blog({ ...req.body, user })
         blog.save();
         

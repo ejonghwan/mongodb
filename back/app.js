@@ -9,6 +9,7 @@ import axios from 'axios';
 // import blogRoutes from './routes/blogRoutes.js'
 // import commentRoutes from './routes/commentRoutes.js'
 import { userRoutes, blogRoutes, commentRoutes } from './routes/index.js'
+// import { generateFakeData } from './faker.js'
 import { generateFakeData } from './faker2.js'
 
 
@@ -29,7 +30,7 @@ const server = async () => {
     try {
         const dbInfo = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@mongostudy.5g49u.mongodb.net/${process.env.DB_TITLE}?retryWrites=true&w=majority`
 
-        mongoose.set('debug', true) //mongoose query 보기
+        // mongoose.set('debug', true) //mongoose query 보기
 
         await mongoose.connect(dbInfo)
         .then(result => console.log('몽고디비 연결성공'))
@@ -60,7 +61,7 @@ const server = async () => {
 
         app.listen(5000, async () => {
             console.log('listen')
-            // await generateFakeData(1, 1, 10)
+            // await generateFakeData(10, 10, 10)
 
           
         })

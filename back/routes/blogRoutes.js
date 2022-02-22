@@ -41,7 +41,9 @@ router.get('/allBlog/:limitNum', async (req, res) => {
         const { limitNum } = req.params;
         let limitNumC = parseInt(limitNum)
         // console.log('asdasdasd: ', limitNumC)
-        const allBlog = await Blog.find().limit(limitNumC).populate([{ path: 'user' }, { path: 'comments', populate: { path: 'user' } }])
+        const allBlog = await Blog.find()
+            .limit(limitNumC)
+            // .populate([{ path: 'user' }, { path: 'comments', populate: { path: 'user' } }])
         return res.status(200).json(allBlog)
 
     } catch(err) {

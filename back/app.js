@@ -2,13 +2,15 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import axios from 'axios';
 
 // 
 // import userRoutes from './routes/userRoutes.js'
 // import blogRoutes from './routes/blogRoutes.js'
 // import commentRoutes from './routes/commentRoutes.js'
 import { userRoutes, blogRoutes, commentRoutes } from './routes/index.js'
-import { generateFakeData } from './faker.js'
+import { generateFakeData } from './faker2.js'
+
 
 
 const app = express();
@@ -31,8 +33,11 @@ const server = async () => {
 
         await mongoose.connect(dbInfo)
         .then(result => console.log('몽고디비 연결성공'))
-    
-        // generateFakeData(100, 10, 300)
+
+
+
+        // generateFakeData(10, 1, 10) 여기서 에러 나는 이유는 서버가 실행되기 전 axios호출했기 떄문..listen 이후에 axios 실행해야함
+        
         // model
 
         // const user = new User({
@@ -53,8 +58,11 @@ const server = async () => {
         app.use('/api/blog/:blogId/comment', commentRoutes)
 
 
-        app.listen(5000, () => {
+        app.listen(5000, async () => {
             console.log('listen')
+            // await generateFakeData(1, 1, 10)
+
+          
         })
     } catch(err) {
         console.log(err)

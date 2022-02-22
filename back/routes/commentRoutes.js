@@ -103,6 +103,12 @@ route.put('/:commentId', async (req, res) => {
 
         const updateComment = await Comment.findByIdAndUpdate(commentId, { $set: { content } }, { new: true })
 
+        /*
+            comments._id - Blog안에 comments배열이 있을텐데 거기안에서 commentId를 선택
+            comments.$.content - 선택한 코멘츠의 인덱스를 .$ 이게 지정해줌... 해당 인덱스 content에 넣어줌
+        */
+        await Blog.updateOne({ 'comments._id': commentId }, { 'comments.$.content': content })
+
 
         return res.status(200).json(updateComment);
 
@@ -120,6 +126,7 @@ route.delete('/:commentId', async (req, res) => {
         if(!mongoose.isValidObjectId(blogId)) return res.status(400).send('is not objectId asdasd')
 
         const deleteComment = await Comment.findByIdAndDelete(commentId)
+        await Blog.updateOne({ 'comments._id': commentId }, { $pull: { comments: { _id: commentId } } })
         return res.status(200).json(deleteComment);
 
     } catch(err) {

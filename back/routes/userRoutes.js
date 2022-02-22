@@ -1,8 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose'
 
-// model
-import User from '../models/User.js'
+// model\
+import { User, Comment, Blog } from '../models/index.js'
 
 
 const router = express.Router();
@@ -31,7 +31,7 @@ router.post('/signup', async (req, res) => {
 
 
 
-// @ path  /api/user/alluser/alluser
+// @ path  /api/user/alluser
 router.get('/alluser', async (req, res) => {
     try {
         const user = await User.find({});
@@ -84,7 +84,7 @@ router.delete('/delete/:userId', async(req, res) => {
 })
 
 
-// @ path  /api/user/
+// @ path  /api/user/update/:userId
 router.put('/update/:userId', async(req, res) => {
     try {
         const { userId } = req.params 
@@ -126,6 +126,45 @@ router.put('/update/:userId', async(req, res) => {
         if(req.body.age) user.age = req.body.age; // 검증함 하고 !
         if(req.body.name) user.name = req.body.name;
         user.save()  //담는다! 여기서 save()는 실제로 update 메서드가 실행됨..
+
+
+        
+        // 중요!! user 전체를 업데이트 하려면 이렇게 해도 되는데 .. 개별로 하려면 필터 옵션 줘야됨 
+        // await Comment.updateMany({ 'user._id': userId }, { user }, { new: true });
+        // // await Blog.updateMany({ 'comments.user._id': userId }, { 'commnets.$.user': user }, { new: true }); // 이렇겐 안되나 ..?
+        // await Blog.updateMany({ 'comments.user._id': userId }, { 'comments.$[co].user': user }, { arrayFilters: [{ 'co.user._id': userId }] });
+        // await Blog.updateMany({ 'user._id': userId }, { user }, { new: true });
+        
+        
+        // if(req.body.name.first) {
+        //     await Blog.updateMany({ 'user._id': userId }, { 'user.name.first': user.name.first })
+        //     await Comment.updateMany({ 'user._id': userId }, { 'user.name.first': user.name.first })
+        //     await Blog.updateMany({}, { 'comments.$[ele].user.name.first': user.name.first }, { arrayFilters: [ {"ele.user._id": userId} ] })
+
+        //     /* 
+        //         await Blog.updateMany({}, { 'comments.$[ele].users.$[user].username': user.name.first }, { arrayFilters: [ {"ele.user._id": userId}, {"user._id": userId} ] })
+
+        //         comments 필드안에 users 배열이 있고 그 안에 username을 필터링해서 바꿔줌 
+
+        //     */
+        // }
+        // if(req.body.name.last) {
+        //     await Blog.updateMany({ 'user._id': userId }, { 'user.name.last': user.name.last })
+        //     await Comment.updateMany({ 'user._id': userId }, { 'user.name.last': user.name.last })
+        // }
+
+        
+        // co 62143c5831b0efa850896ca0
+        // bl 62143c5831b0efa850896c86
+        // u 62143c5731b0efa850896c82
+
+        
+
+
+
+
+
+
         // console.log(user)
         // 이런식으로 했을 땐 { new: true } 도 필요없음
         res.status(200).json(user)

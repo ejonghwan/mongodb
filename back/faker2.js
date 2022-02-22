@@ -3,10 +3,10 @@
 // const axios = require("axios");
 // const URI = "http://localhost:3000";
 
-import faker from 'faker';
-import User from '../back/models/User.js'
 import axios from 'axios';
-const URI = "http://localhoist:5000";
+import faker from 'faker';
+import { User, Comment, Blog } from './models/index.js'
+const URI = "http://localhost:5000";
 
 
 export const generateFakeData = async (userCount, blogsPerUser, commentsPerUser) => {
@@ -35,32 +35,36 @@ export const generateFakeData = async (userCount, blogsPerUser, commentsPerUser)
       );
     }
 
-    console.log("fake data inserting to database...");
+    // console.log("fake data inserting to database...");
 
     await User.insertMany(users);
-    console.log(`${users.length} fake users generated!`);
+    // console.log(`${users.length} fake users generated!`);
 
+
+    
     users.map((user) => {
       for (let i = 0; i < blogsPerUser; i++) {
         blogs.push(
-          axios.post(`${URI}/blog`, {
+          axios.post(`http://localhost:5000/api/blog`, {
             title: faker.lorem.words(),
             content: faker.lorem.paragraphs(),
-            islive: true,
+            isLive: true,
             userId: user.id,
           })
         );
       }
     });
+    // console.log('hohohohoho')
 
     let newBlogs = await Promise.all(blogs);
-    console.log(`${newBlogs.length} fake blogs generated!`);
+    // console.log('come : ', newBlogs)
+    // console.log(`${newBlogs.length} fake blogs generated!`);
 
     users.map((user) => {
       for (let i = 0; i < commentsPerUser; i++) {
         let index = Math.floor(Math.random() * blogs.length);
         comments.push(
-          axios.post(`${URI}/blog/${newBlogs[index].data.blog._id}/comment`, {
+          axios.post(`${URI}/api/blog/${newBlogs[index].data._id}/comment`, {
             content: faker.lorem.sentence(),
             userId: user.id,
           })

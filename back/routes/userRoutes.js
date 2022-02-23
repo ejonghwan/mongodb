@@ -65,16 +65,22 @@ router.get('/:userId', async (req, res) => {
     } 
 })
 
-
-// @ path  /api/user/
+// @ DELETE
+// @ path  /api/user/delete/:userId
 router.delete('/delete/:userId', async(req, res) => {
     try {
         const { userId } = req.params
         if(!mongoose.isValidObjectId(userId)) {
             return res.status(400).json({ err: 'invalid userId' })
         }
-
-        const user = await User.findByIdAndDelete({ _id: userId })
+    
+        let [ user ] = await Promise.all([
+             User.findByIdAndDelete({ _id: userId }),
+             Blog.deleteMany({ 'user._id': userId }),
+             Blog.updateMany({ 'comments.user._id': userId }, { $pull: { comments: { 'user._id': userId } } }),
+             Comment.deleteMany({ 'user._id': userId }),
+        ])
+        
 
         return res.status(200).json(user)
 
@@ -136,22 +142,23 @@ router.put('/update/:userId', async(req, res) => {
         // await Blog.updateMany({ 'user._id': userId }, { user }, { new: true });
         
         
-        // if(req.body.name.first) {
-        //     await Blog.updateMany({ 'user._id': userId }, { 'user.name.first': user.name.first })
-        //     await Comment.updateMany({ 'user._id': userId }, { 'user.name.first': user.name.first })
-        //     await Blog.updateMany({}, { 'comments.$[ele].user.name.first': user.name.first }, { arrayFilters: [ {"ele.user._id": userId} ] })
+        if(req.body.name.first) {
+            await Promise.all([
+                 Blog.updateMany({ 'user._id': userId }, { 'user.name.first': user.name.first }),
+                 Comment.updateMany({ 'user._id': userId }, { 'user.name.first': user.name.first }),
+                 Blog.updateMany({}, { 'comments.$[ele].user.name.first': user.name.first }, { arrayFilters: [ {"ele.user._id": userId} ] })
+            ])
+            /* 
+                await Blog.updateMany({}, { 'comments.$[ele].users.$[user].username': user.name.first }, { arrayFilters: [ {"ele.user._id": userId}, {"user._id": userId} ] })
 
-        //     /* 
-        //         await Blog.updateMany({}, { 'comments.$[ele].users.$[user].username': user.name.first }, { arrayFilters: [ {"ele.user._id": userId}, {"user._id": userId} ] })
+                comments 필드안에 users 배열이 있고 그 안에 username을 필터링해서 바꿔줌 
 
-        //         comments 필드안에 users 배열이 있고 그 안에 username을 필터링해서 바꿔줌 
-
-        //     */
-        // }
-        // if(req.body.name.last) {
-        //     await Blog.updateMany({ 'user._id': userId }, { 'user.name.last': user.name.last })
-        //     await Comment.updateMany({ 'user._id': userId }, { 'user.name.last': user.name.last })
-        // }
+            */
+        }
+        if(req.body.name.last) {
+            await Blog.updateMany({ 'user._id': userId }, { 'user.name.last': user.name.last })
+            await Comment.updateMany({ 'user._id': userId }, { 'user.name.last': user.name.last })
+        }
 
         
         // co 62143c5831b0efa850896ca0
@@ -159,12 +166,6 @@ router.put('/update/:userId', async(req, res) => {
         // u 62143c5731b0efa850896c82
 
         
-
-
-
-
-
-
         // console.log(user)
         // 이런식으로 했을 땐 { new: true } 도 필요없음
         res.status(200).json(user)

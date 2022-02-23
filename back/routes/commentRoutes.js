@@ -26,7 +26,7 @@ route.post('/', async (req, res) => {
 
         // const user = await User.findById(userId);
         // const blog = await Blog.findById(blogId);
-        // 여기서는 promise.all
+        // 여기서는 promise.all([])
         /*
             위에껀 동기(직렬)로 user불러오고 기다렸다가 blog를 불러오지만
             아래껀 비동기(병렬)로 user, blog를 한번에 불러옴 
@@ -36,17 +36,40 @@ route.post('/', async (req, res) => {
             User.findById(userId),
             Blog.findById(blogId)
         ])
+        const createComment = await new Comment({ content, user, blog: blogId }) // 맥시멈오류 여기 아이디로 변경
 
 
-        // console.log('asdasdasd', req.body)
-        const createComment = await new Comment({ content, user, blog })
+        /* 생성하는 방법 1~ 3 */        
+        // await Promise.all([  // 1. 보통 생성할 때 두개는 직렬로 할 필요 없어서..
+        //     createComment.save(),
+        //     // Blog모델에 코멘트 모델 넣어놨고 ...코멘트를 추가하거나 업데이트할때 "코멘트api안에서 블로그를" 업데이트해줘야됨 
+        //     Blog.updateOne({ _id: blogId }, { $push: { comments: createComment } })
+        // ])
 
 
-        await Promise.all([  //두개는 직렬로 할 필요 없어서..
-            createComment.save(),
-            // Blog모델에 코멘트 모델 넣어놨고 ...코멘트를 추가하거나 업데이트할때 "코멘트api안에서 블로그를" 업데이트해줘야됨 
-            await Blog.updateOne({ _id: blogId }, { $push: { comments: createComment } })
-        ])
+        /* 2. 페이징떔에 다시...코멘트 생성할때마다 blog안에 필드 카운트 업 */
+        // await Blog.findByIdAndUpdate(blogId, { $inc: { commentCount: 1 } }) 
+        // createComment.save();
+
+
+        /* 3. 여러 조건을 넣어야돼서 아래처럼함 */
+        blog.commentCount++;
+        blog.comments.push(createComment);
+        if(blog.commentCount.length > 3) {
+            blog.comments.shift()
+        }
+        /* 
+            Maximum call stack size exceeded 에러가 나는데 ...이게 왜 그러냐면 코멘트 모델안에 blog..
+            모델: blog: { type: Types.ObjectId, required: true, ref: 'blog', }  
+            api: const createComment = await new Comment({ content, user, blog })
+
+            여기서 들어가는게 blog인스턴스 전체가 들어가서 코멘트안에 -> 블로그 인스턴스안에 -> 코멘트 -> 블로그 인스턴스안에 -> 코멘트... 이런식으로 무한대로 들어가서 그럼
+
+            해결방법은 코멘트 생성할 때 blog: blogId로 넣어주면 됨
+        */
+        blog.save();
+        createComment.save();
+
         
         
 
@@ -67,7 +90,12 @@ route.get('/allComment', async (req, res) => {
         const { blogId } = req.params; 
         if(!mongoose.isValidObjectId(blogId)) return res.status(400).send('is not objectId')
         
-        const allComment = await Comment.find({blog: blogId});
+        const { page = 0 } = req.query;
+        const p = parseInt(page)
+        const allComment = await Comment.find({ blog: blogId }).sort({ createAt: -1 }).skip(p * 3).limit(3)
+        
+
+        // const allComment = await Comment.find({blog: blogId});
         return res.status(200).json(allComment);
 
     } catch(err) {

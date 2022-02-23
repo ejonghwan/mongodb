@@ -6,12 +6,13 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+        index: true,
     },
     name: {
         first: { type: String, required: true,},
         last: { type: String, required: true, }
     },
-    age: Number,
+    age: { type: Number, index: true, },
     email: String,
     array: [
         { name: { type: String } }
@@ -19,6 +20,10 @@ const UserSchema = new mongoose.Schema({
 }, {
     timestamps: true, //생성한 시간을 만들어줌, 업데이트할 때마다 업데이트키를 생성해줌 
 })
+
+
+
+
 
 const User = mongoose.model('user', UserSchema)
 export default User;

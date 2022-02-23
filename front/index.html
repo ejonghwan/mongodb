@@ -19,7 +19,7 @@
         
         const getBlog = async () => {
             console.time('loading time: ');
-            const res  = await axios.get(`http://localhost:5000/api/blog/allBlog/${10}`)
+            const res  = await axios.get(`http://localhost:5000/api/blog/allBlog?page=${3}`)
             let data = await res.data;
             // console.log(data[0])
             

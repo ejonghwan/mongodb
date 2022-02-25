@@ -55,7 +55,7 @@ route.post('/', async (req, res) => {
         /* 3. 여러 조건을 넣어야돼서 아래처럼함 */
         blog.commentCount++;
         blog.comments.push(createComment);
-        if(blog.commentCount.length > 3) {
+        if(blog.commentCount > 3) {
             blog.comments.shift()
         }
         /* 
@@ -67,12 +67,12 @@ route.post('/', async (req, res) => {
 
             해결방법은 코멘트 생성할 때 blog: blogId로 넣어주면 됨
         */
-        blog.save();
-        createComment.save();
+       await Promise.all([
+            blog.save(),
+            createComment.save()
+       ])
 
-        
-        
-
+       console.log(createComment)
 
 
         return res.status(200).json(createComment);
@@ -92,7 +92,14 @@ route.get('/allComment', async (req, res) => {
         
         const { page = 0 } = req.query;
         const p = parseInt(page)
-        const allComment = await Comment.find({ blog: blogId }).sort({ createAt: -1 }).skip(p * 3).limit(3)
+        const allComment = await Comment.find({ blog: blogId }).sort({ createdAt: -1 }).skip(p * 3).limit(3)
+        
+        // 0 * 3 = 0  0 ~3  
+        // 1 * 3 = 3  1 ~3
+        // 2 * 3 = 6  3 ~6
+        // 3 * 3 = 9  6 ~9
+        // 4 * 3 = 12 9 ~12
+
         
 
         // const allComment = await Comment.find({blog: blogId});

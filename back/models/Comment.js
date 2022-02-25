@@ -21,7 +21,7 @@ const CommentModel = new Schema({
 })
 
 
-CommentModel.index({ blog: 1, createAt: -1 }); // blog에는 인덱싱 안되어있어서 한번 복합키로 인덱스만들어줌 
+CommentModel.index({ blog: 1, createdAt: -1 }); // blog에는 인덱싱 안되어있어서 한번 복합키로 인덱스만들어줌 
 
 
 export { CommentModel }

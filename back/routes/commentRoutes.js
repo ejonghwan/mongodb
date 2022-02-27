@@ -15,8 +15,113 @@ const route = express.Router({ mergeParams: true, });
 // @ POST
 // @ /api/blog/:blogId/comment
 route.post('/', async (req, res) => {
-    try {
+    
+    // 트랜젝션
+    // const session = await mongoose.startSession()
+    // let createComment;
+    // try {
+    //      await session.withTransaction(async() => {
+    //         const { content, userId } = req.body;
+    //         const { blogId } = req.params;
+    
+    //         if(content && typeof content !== 'string') return res.status(400).send('is requied content') 
+    //         if(!mongoose.isValidObjectId(userId)) return res.status(400).send('is not objectId')
+    //         if(!mongoose.isValidObjectId(blogId)) return res.status(400).send('is not objectId')
+    
+    //         const [user, blog] = await Promise.all([
+    //             User.findById(userId, {}, { session }), // 두번째 조건 없으니 빈 객체, 뒤에 옵션으로 추가해줘야됨
+    //             Blog.findById(blogId, {}, { session })
+    //         ])
+    //         createComment = await new Comment({ content, user, blog: blogId })
+    
+    //         await session.abortTransaction() // 하나라도 잘못되었다면 기존에 적용된게 있다 하더라도..트랜잭션 중단 (아토믹) 
 
+    //         blog.commentCount++;
+    //         blog.comments.push(createComment);
+    //         if(blog.commentCount > 3) {
+    //             blog.comments.shift()
+    //         }
+          
+    //        await Promise.all([
+    //             createComment.save({ session }),
+    //             blog.save(), // blog는 없어도 되는 이유는 findById에서 세션으로 불러왔기 때문에..
+    //        ])
+    //      })
+    //      return res.status(200).json(createComment);
+    // } catch(error) {
+    //     console.log(error)
+    // } finally {
+    //     await session.endSession();
+    // }
+// })
+    
+
+//     try {
+//         const { content, userId } = req.body;
+//         const { blogId } = req.params;
+
+//         if(content && typeof content !== 'string') return res.status(400).send('is requied content') 
+//         if(!mongoose.isValidObjectId(userId)) return res.status(400).send('is not objectId')
+//         if(!mongoose.isValidObjectId(blogId)) return res.status(400).send('is not objectId')
+
+//         // const user = await User.findById(userId);
+//         // const blog = await Blog.findById(blogId);
+//         // 여기서는 promise.all([])
+//         /*
+//             위에껀 동기(직렬)로 user불러오고 기다렸다가 blog를 불러오지만
+//             아래껀 비동기(병렬)로 user, blog를 한번에 불러옴 
+//             time: 171ms -> 97ms 
+//         */
+//         const [user, blog] = await Promise.all([
+//             User.findById(userId),
+//             Blog.findById(blogId)
+//         ])
+//         const createComment = await new Comment({ content, user, blog: blogId }) // 맥시멈오류 여기 아이디로 변경
+
+
+//         /* 생성하는 방법 1~ 3 */        
+//         // await Promise.all([  // 1. 보통 생성할 때 두개는 직렬로 할 필요 없어서..
+//         //     createComment.save(),
+//         //     // Blog모델에 코멘트 모델 넣어놨고 ...코멘트를 추가하거나 업데이트할때 "코멘트api안에서 블로그를" 업데이트해줘야됨 
+//         //     Blog.updateOne({ _id: blogId }, { $push: { comments: createComment } })
+//         // ])
+
+
+//         /* 2. 페이징떔에 다시...코멘트 생성할때마다 blog안에 필드 카운트 업 */
+//         // await Blog.findByIdAndUpdate(blogId, { $inc: { commentCount: 1 } }) 
+//         // createComment.save();
+
+
+//         /* 3. 여러 조건을 넣어야돼서 아래처럼함 */
+//         blog.commentCount++;
+//         blog.comments.push(createComment);
+//         if(blog.commentCount > 3) {
+//             blog.comments.shift()
+//         }
+//         /* 
+//             Maximum call stack size exceeded 에러가 나는데 ...이게 왜 그러냐면 코멘트 모델안에 blog..
+//             모델: blog: { type: Types.ObjectId, required: true, ref: 'blog', }  
+//             api: const createComment = await new Comment({ content, user, blog })
+
+//             여기서 들어가는게 blog인스턴스 전체가 들어가서 코멘트안에 -> 블로그 인스턴스안에 -> 코멘트 -> 블로그 인스턴스안에 -> 코멘트... 이런식으로 무한대로 들어가서 그럼
+
+//             해결방법은 코멘트 생성할 때 blog: blogId로 넣어주면 됨
+//         */
+//        await Promise.all([
+//             blog.save(),
+//             createComment.save()
+//        ])
+//        console.log(createComment)
+//         return res.status(200).json(createComment);
+
+//     } catch(err) {
+//         console.log(err)
+//     }
+// })
+
+
+    //트랜잭션을 이용하지않고 한번에 처리하기 
+    try {
         const { content, userId } = req.body;
         const { blogId } = req.params;
 
@@ -24,63 +129,26 @@ route.post('/', async (req, res) => {
         if(!mongoose.isValidObjectId(userId)) return res.status(400).send('is not objectId')
         if(!mongoose.isValidObjectId(blogId)) return res.status(400).send('is not objectId')
 
-        // const user = await User.findById(userId);
-        // const blog = await Blog.findById(blogId);
-        // 여기서는 promise.all([])
-        /*
-            위에껀 동기(직렬)로 user불러오고 기다렸다가 blog를 불러오지만
-            아래껀 비동기(병렬)로 user, blog를 한번에 불러옴 
-            time: 171ms -> 97ms 
-        */
         const [user, blog] = await Promise.all([
             User.findById(userId),
             Blog.findById(blogId)
         ])
         const createComment = await new Comment({ content, user, blog: blogId }) // 맥시멈오류 여기 아이디로 변경
 
-
-        /* 생성하는 방법 1~ 3 */        
-        // await Promise.all([  // 1. 보통 생성할 때 두개는 직렬로 할 필요 없어서..
-        //     createComment.save(),
-        //     // Blog모델에 코멘트 모델 넣어놨고 ...코멘트를 추가하거나 업데이트할때 "코멘트api안에서 블로그를" 업데이트해줘야됨 
-        //     Blog.updateOne({ _id: blogId }, { $push: { comments: createComment } })
-        // ])
-
-
-        /* 2. 페이징떔에 다시...코멘트 생성할때마다 blog안에 필드 카운트 업 */
-        // await Blog.findByIdAndUpdate(blogId, { $inc: { commentCount: 1 } }) 
-        // createComment.save();
-
-
-        /* 3. 여러 조건을 넣어야돼서 아래처럼함 */
-        blog.commentCount++;
-        blog.comments.push(createComment);
-        if(blog.commentCount > 3) {
-            blog.comments.shift()
-        }
-        /* 
-            Maximum call stack size exceeded 에러가 나는데 ...이게 왜 그러냐면 코멘트 모델안에 blog..
-            모델: blog: { type: Types.ObjectId, required: true, ref: 'blog', }  
-            api: const createComment = await new Comment({ content, user, blog })
-
-            여기서 들어가는게 blog인스턴스 전체가 들어가서 코멘트안에 -> 블로그 인스턴스안에 -> 코멘트 -> 블로그 인스턴스안에 -> 코멘트... 이런식으로 무한대로 들어가서 그럼
-
-            해결방법은 코멘트 생성할 때 blog: blogId로 넣어주면 됨
-        */
-       await Promise.all([
-            blog.save(),
-            createComment.save()
-       ])
-
-       console.log(createComment)
-
+        // 여기부분 변경됨..속도가 훨 빠름 몽고디비에서 처리한거임.. 트랜잭션을 안했기 때문에 아토믹시티 문제는 여전히 남아있음. 이런경우는 트랜잭션 사용하지않고 하는게 좋음...크리티컬하지않기 떄문에 
+        await Promise.all([
+            createComment.save(),
+            //제일 최근 3개 빼고 모두 삭제
+            Blog.updateOne({ _id: blogId }, { $inc: { commentCount: 1 }, $push: { comments: { $each: [createComment], $slice: -3 } } })
+            
+        ])
 
         return res.status(200).json(createComment);
 
     } catch(err) {
         console.log(err)
     }
-})
+}) 
 
 
 // @ GET

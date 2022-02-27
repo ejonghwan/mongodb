@@ -61,7 +61,7 @@ const server = async () => {
 
         app.listen(5000, async () => {
             console.log('listen')
-            // await generateFakeData(1, 2, 6)
+            await generateFakeData(1, 2, 15)
 
           
         })

@@ -28,7 +28,8 @@ import User from './models/User.js'
 
 const server = async () => {
     try {
-        const dbInfo = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@mongostudy.5g49u.mongodb.net/${process.env.DB_TITLE}?retryWrites=true&w=majority`
+        // const dbInfo = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@mongostudy.5g49u.mongodb.net/${process.env.DB_TITLE}?retryWrites=true&w=majority`
+        const dbInfo = process.env.MONGO_URI
 
         // mongoose.set('debug', true) //mongoose query 보기
 
@@ -61,7 +62,7 @@ const server = async () => {
 
         app.listen(5000, async () => {
             console.log('listen')
-            await generateFakeData(1, 2, 15)
+            // await generateFakeData(2, 5, 15)
 
           
         })

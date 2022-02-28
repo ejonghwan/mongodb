@@ -5,7 +5,8 @@
   "main": "app.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon app.js"
+    "start": "dot-env node app.js",
+    "dev": "dot-env nodemon app.js"
   },
   "author": "",
   "license": "ISC",

@@ -11,6 +11,19 @@
     hoho merge
 
 
+    <style>
+        * { margin:0; padding:0; }
+        html, body {width: 100%; height: 100%;}
+        ul, ol { list-style: none ;}
+        .comment {padding: 5px; margin-left: 20px;  background: rgb(235, 235, 235); position: relative; margin-top:7px;}
+        .comment::before {content: '-'; display: block; position: absolute; top: 3px; left:-10px; ;}
+        .comment > li {position: relative; padding-left: 10px; font-size: 13px;}
+        .comment > li::before {content: '#'; display: block; position: absolute; padding:0; top:2px; left: 0px;}
+
+        ul { padding: 20px; }
+    </style>
+
+
     <div class="dataElement">
         <ul></ul>
     </div>
@@ -19,7 +32,7 @@
         
         const getBlog = async () => {
             console.time('loading time: ');
-            const res  = await axios.get(`http://localhost:5000/api/blog/allBlog?page=${3}`)
+            const res  = await axios.get(`http://localhost:5000/api/blog/allBlog?page=${1}`)
             let data = await res.data;
             // console.log(data[0])
             
@@ -67,10 +80,10 @@
 
         const testGroup = async () => {
             await getBlog();
-            await getBlog();
-            await getBlog();
-            await getBlog();
-            await getBlog();
+            // await getBlog();
+            // await getBlog();
+            // await getBlog();
+            // await getBlog();
         }
 
         testGroup()
@@ -85,7 +98,17 @@
                     <li>
                         <div><strong>${data.title}</strong></div>    
                         <div>${data.content}</div>    
-                        
+                     
+                        <ul class="comment">
+                            ${data.comments.map(comment => {
+                                return `
+                                    <li>
+                                        ${comment.user.name.first} ${comment.user.name.last}<br >
+                                        ${comment.content}
+                                    </li>
+                                `
+                            }).join(' ')}
+                        </ul>
                     </li>
                     <br />
                 `    

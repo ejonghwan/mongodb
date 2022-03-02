@@ -41,8 +41,8 @@ router.get('/allBlog', async (req, res) => {
         const { page } = req.query;
         let p = parseInt(page);
         const allBlog = await Blog.find()
-            .skip(p * 3)
-            .limit(3)
+            .skip(p * 6)
+            .limit(6)
             // .populate([{ path: 'user' }, { path: 'comments', populate: { path: 'user' } }])
         return res.status(200).json(allBlog)
 

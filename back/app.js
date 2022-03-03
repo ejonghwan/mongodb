@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import axios from 'axios';
+import path from 'path'
+
 
 // 
 // import userRoutes from './routes/userRoutes.js'
@@ -21,7 +23,6 @@ app.use(cors({ origin: true, credentials: true, }));
 dotenv.config()
 
 import User from './models/User.js'
-
 
 
 
@@ -52,8 +53,6 @@ const server = async () => {
         // user.save();
 
 
-
-
         // routes
         app.use('/api/user', userRoutes)
         app.use('/api/blog', blogRoutes)
@@ -62,6 +61,7 @@ const server = async () => {
 
         app.listen(5000, async () => {
             console.log('listen')
+           
             // await generateFakeData(2, 10, 15)
 
           

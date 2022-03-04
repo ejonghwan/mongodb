@@ -30,7 +30,11 @@ import User from './models/User.js'
 const server = async () => {
     try {
         // const dbInfo = `mongodb+srv://${process.env.DB_NAME}:${process.env.DB_PASSWORD}@mongostudy.5g49u.mongodb.net/${process.env.DB_TITLE}?retryWrites=true&w=majority`
-        const dbInfo = process.env.MONGO_URI
+        const dbInfo = process.env.MONGO_URI;
+        const PORT = process.env.PORT;
+
+        if(!dbInfo) throw new Error('is not defined MONGO_URI');
+        if(!PORT) throw new Error('is not defined PORT'); 
 
         // mongoose.set('debug', true) //mongoose query 보기
 
@@ -59,9 +63,9 @@ const server = async () => {
         app.use('/api/blog/:blogId/comment', commentRoutes)
 
 
-        app.listen(5000, async () => {
-            console.log('listen')
-           
+        app.listen(PORT, async () => {
+            console.log(`listen ${PORT}`)
+            
             // await generateFakeData(2, 10, 15)
 
           

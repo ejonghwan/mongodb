@@ -9,10 +9,10 @@ const router = express.Router();
 
 
 
-// @ path  /api/user/
+// @ path  /api/user/signup
 router.post('/signup', async (req, res) => {
     try {
-        console.log(req.body)
+        // console.log(req.body)
         let { username, name } = req.body; // 클라이언트 입력오류는 여기서 체크해줌
 
         if(!username) return res.status(400).send({ err: 'username is required' })

@@ -43,7 +43,7 @@ const server = async () => {
 
 
 
-        // generateFakeData(10, 1, 10) 여기서 에러 나는 이유는 서버가 실행되기 전 axios호출했기 떄문..listen 이후에 axios 실행해야함
+        // generateFakeData(10, 1, 10) 여기서 에러 나는 이유는 서버가 실행되기 전 axios호출했기 떄문..listen 이후에 axios 실행해야함 vv
         
         // model
 

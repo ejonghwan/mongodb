@@ -33,8 +33,8 @@ const server = async () => {
         const dbInfo = process.env.MONGO_URI;
         const PORT = process.env.PORT;
 
-        if(!dbInfo) throw new Error('is not defined MONGO_URI');
-        if(!PORT) throw new Error('is not defined PORT'); 
+        // if(!dbInfo) throw new Error('is not defined MONGO_URI');
+        // if(!PORT) throw new Error('is not defined PORT'); 
 
         // mongoose.set('debug', true) //mongoose query 보기
 
